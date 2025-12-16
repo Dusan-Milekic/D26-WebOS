@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+#desktop {
+  display: grid;
+  grid-auto-flow: column;        /* KLJUČNO */
+  grid-template-rows: repeat(auto-fill, 100px);
+  grid-auto-columns: 90px;
+  gap: 12px;
+  padding: 16px;
+  height: 100vh;
+}
