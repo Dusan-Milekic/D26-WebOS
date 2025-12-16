@@ -35,7 +35,7 @@ export default function File({ name = "My File.txt" }: { name?: string }) {
         <line x1="16" y1="26" x2="32" y2="26" stroke="#1F2937" strokeWidth="2" strokeLinecap="round"/>
         <line x1="16" y1="30" x2="28" y2="30" stroke="#1F2937" strokeWidth="2" strokeLinecap="round"/>
       </svg>
-      <span className="text-xs text-white font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+      <span className="text-xs text-white font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]" contentEditable={isSelected}>
         {name}
       </span>
     </div>
