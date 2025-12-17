@@ -14,6 +14,7 @@
 .animate-systemPanel {
   animation: systemPanel 0.25s ease-out;
 }
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -29,25 +30,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-image: url('background.jpg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-
-    -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10+ */
-  user-select: none; /* Standard */
+  
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-/*Media for smaller sizes bacground image*/
-@media (max-width: 768px) {
-  body {
-    background-position: right 30% center;
-  }
-}
+/* Remove media query for background since it's now dynamic */

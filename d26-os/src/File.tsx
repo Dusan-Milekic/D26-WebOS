@@ -15,7 +15,7 @@ export default function File({ id, name: initialName = "My File.txt", onFolderOp
   const [isDragOver, setIsDragOver] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const fileRef = useRef<HTMLDivElement>(null);
-  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   const files = useFiles((s) => s.files);
   const moveFile = useFiles((s) => s.moveFile);

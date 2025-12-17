@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ShowSystem from "./ShowSystem";
 import useFiles from "./store/files";
 import { nanoid } from "nanoid";
-
+import Personalize from "./Personalize";
 type MousePosition = {
   x: number;
   y: number;
@@ -21,6 +21,7 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
   const [menuPos, setMenuPos] = useState<MousePosition>(mousePosition);
 
   const addFile = useFiles((s) => s.addFile);
+  const [showPersonalize, setShowPersonalize] = useState(false);
 
   useEffect(() => {
     const menuWidth = 220;
@@ -110,13 +111,14 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
             Show System
           </li>
 
-          <li className="px-4 py-2 hover:bg-zinc-800 cursor-pointer">
+          <li className="px-4 py-2 hover:bg-zinc-800 cursor-pointer" onClick={setShowPersonalize.bind(null, true)}>
             Personalize
           </li>
         </ul>
       </div>
 
       {showSystem && <ShowSystem />}
+      {showPersonalize && <Personalize onClose={() => setShowPersonalize(false)} />}
     </>
   );
 }

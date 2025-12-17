@@ -8,6 +8,7 @@ import Taskbar from "./Taskbar";
 import StartMenu from "./StartMenu";
 import FolderWindow from "./Folderwindow";
 import TextEditor from "./Texteditor";
+import useTheme from "./store/theme";
 
 function App() {
   const [bootDone, setBootDone] = useState(false);
@@ -18,6 +19,7 @@ function App() {
   const [openFiles, setOpenFiles] = useState<Array<{ id: string; name: string }>>([]);
 
   const files = useFiles((s) => s.files);
+  const currentTheme = useTheme((s) => s.currentTheme);
   
   // Filter out files that are inside folders - show only root level files
   const rootFiles = files.filter((file) => !file.parent || file.parent === null);
@@ -29,7 +31,6 @@ function App() {
   };
 
   const handleFolderOpen = (folderId: string, folderName: string) => {
-    // Check if folder is already open
     if (!openFolders.find(f => f.id === folderId)) {
       setOpenFolders([...openFolders, { id: folderId, name: folderName }]);
     }
@@ -40,7 +41,6 @@ function App() {
   };
 
   const handleFileOpen = (fileId: string, fileName: string) => {
-    // Check if file is already open
     if (!openFiles.find(f => f.id === fileId)) {
       setOpenFiles([...openFiles, { id: fileId, name: fileName }]);
     }
@@ -48,6 +48,28 @@ function App() {
 
   const handleFileClose = (fileId: string) => {
     setOpenFiles(openFiles.filter(f => f.id !== fileId));
+  };
+
+  // Get background class based on theme
+  const getBackgroundClass = () => {
+    switch (currentTheme.background) {
+      case 'gradient-blue':
+        return 'bg-gradient-to-br from-blue-500 to-purple-600';
+      case 'gradient-pink':
+        return 'bg-gradient-to-br from-pink-500 to-orange-500';
+      case 'gradient-green':
+        return 'bg-gradient-to-br from-green-500 to-teal-500';
+      case 'dark':
+        return 'bg-gradient-to-br from-gray-900 to-gray-800';
+      case 'ocean':
+        return 'bg-gradient-to-br from-blue-600 to-cyan-500';
+      case 'sunset':
+        return 'bg-gradient-to-br from-red-500 to-yellow-500';
+      case 'image':
+        return 'bg-cover bg-center';
+      default:
+        return 'bg-gradient-to-br from-gray-900 to-gray-800';
+    }
   };
 
   return (
@@ -58,7 +80,12 @@ function App() {
         <div
           id="desktop"
           onContextMenu={openPopup}
-          className="w-screen h-screen relative"
+          className={`w-screen h-screen relative transition-all duration-500 ${getBackgroundClass()}`}
+          style={
+            currentTheme.background === 'image' && currentTheme.backgroundImage
+              ? { backgroundImage: `url(${currentTheme.backgroundImage})` }
+              : undefined
+          }
         >
           {rootFiles.map((file) => (
             <File 

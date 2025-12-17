@@ -1,4 +1,5 @@
 import { useSpring, animated } from "@react-spring/web";
+import useTheme from "./store/theme";
 
 export default function Taskbar({
   onStartClick,
@@ -11,6 +12,8 @@ export default function Taskbar({
     config: { tension: 170, friction: 20 },
   });
 
+  const currentTheme = useTheme((s) => s.currentTheme);
+
   return (
     <animated.div
       style={animation}
@@ -21,14 +24,23 @@ export default function Taskbar({
         flex items-center px-4 gap-3
       "
     >
-      {/* ✅ Start button now works */}
+      {/* Start button with accent color */}
       <div
         onClick={onStartClick}
         className="
-          w-8 h-8 bg-zinc-800/60 hover:bg-zinc-700/60 
-          rounded-md grid place-items-center 
-          text-white cursor-pointer transition
+          w-8 h-8 rounded-md grid place-items-center 
+          text-white cursor-pointer transition-all
+          hover:scale-110
         "
+        style={{
+          backgroundColor: currentTheme.colors.accent + '40', // 40 = 25% opacity
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = currentTheme.colors.accent + '60';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = currentTheme.colors.accent + '40';
+        }}
       >
         ⊞
       </div>
@@ -53,7 +65,7 @@ export default function Taskbar({
             transition: 0.2s;
           }
           .taskbar-icon:hover {
-            background: rgba(255,255,255,0.15);
+            background: ${currentTheme.colors.accent}40;
             transform: translateY(-2px);
           }
         `}
