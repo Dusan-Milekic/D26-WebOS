@@ -1,16 +1,20 @@
 import { create } from "zustand";
+
 export type FileItem = {
   id: string;
   name: string;
   type: "folder" | "txt" | "image" | "other";
-  dateModified: number; // timestamp (najbolja praksa)
+  dateModified: number;
+  parent?: string | null; // ✅ folder relationship
+  content?: string; // ✅ content for txt files
 };
 
 type FileStore = {
   files: FileItem[];
   addFile: (file: FileItem) => void;
-  removeFile: (id: FileItem["id"]) => void;
+  removeFile: (id: string) => void;
   updateFile: (file: FileItem) => void;
+  moveFile: (fileId: string, folderId: string) => void; // ✅ correct signature
 };
 
 const useFiles = create<FileStore>()((set) => ({
@@ -30,6 +34,14 @@ const useFiles = create<FileStore>()((set) => ({
     set((state) => ({
       files: state.files.map((f) =>
         f.id === updatedFile.id ? updatedFile : f
+      ),
+    })),
+
+  // ✅ Move file into folder
+  moveFile: (fileId, folderId) =>
+    set((state) => ({
+      files: state.files.map((f) =>
+        f.id === fileId ? { ...f, parent: folderId } : f
       ),
     })),
 }));

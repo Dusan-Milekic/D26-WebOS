@@ -1,22 +1,81 @@
 import { useState, useEffect, useRef } from 'react';
+import useFiles from './store/files';
 
-export default function File({ name: initialName = "My File.txt" }: { name?: string }) {
+interface FileProps {
+  id: string;
+  name?: string;
+  onFolderOpen?: (folderId: string, folderName: string) => void;
+  onFileOpen?: (fileId: string, fileName: string) => void;
+}
+
+export default function File({ id, name: initialName = "My File.txt", onFolderOpen, onFileOpen }: FileProps) {
   const [isSelected, setIsSelected] = useState(false);
   const [name, setName] = useState(initialName);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
   const fileRef = useRef<HTMLDivElement>(null);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const files = useFiles((s) => s.files);
+  const moveFile = useFiles((s) => s.moveFile);
+  const updateFile = useFiles((s) => s.updateFile);
+  
+  const currentFile = files.find(f => f.id === id);
+  const isFolder = currentFile?.type === 'folder' || name.endsWith('.dir');
 
   const SaveEdit = (e: React.FormEvent<HTMLSpanElement>) => {
     const newName = e.currentTarget.textContent || "";
     setName(newName);
+    if (currentFile) {
+      updateFile({ ...currentFile, name: newName });
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // stop newline
+      e.preventDefault();
       const newName = e.currentTarget.textContent || "";
       setName(newName);
       setIsSelected(false);
-      SaveEdit(e);
+      if (currentFile) {
+        updateFile({ ...currentFile, name: newName });
+      }
+    }
+  };
+
+  // Drag handlers
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('fileId', id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (isFolder) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      setIsDragOver(true);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    if (isFolder) {
+      const draggedFileId = e.dataTransfer.getData('fileId');
+      if (draggedFileId && draggedFileId !== id) {
+        moveFile(draggedFileId, id);
+      }
     }
   };
 
@@ -33,13 +92,45 @@ export default function File({ name: initialName = "My File.txt" }: { name?: str
     };
   }, []);
 
+  // Handle double-click on folders
+  const handleClick = () => {
+    setClickCount((prev) => prev + 1);
+
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+    }
+
+    clickTimerRef.current = setTimeout(() => {
+      if (clickCount === 0) {
+        // Single click - select
+        setIsSelected(true);
+      } else if (clickCount === 1) {
+        // Double click
+        if (isFolder && onFolderOpen) {
+          // Open folder
+          onFolderOpen(id, name);
+        } else if ((currentFile?.type === 'txt' || name.endsWith('.txt')) && onFileOpen) {
+          // Open txt file in editor
+          onFileOpen(id, name);
+        }
+      }
+      setClickCount(0);
+    }, 250);
+  };
+
   return (
     <div
       ref={fileRef}
-      onClick={() => setIsSelected(true)}
-      className={`inline-flex max-w-22 flex-col items-center gap-2 p-2 hover:bg-blue-300 hover:bg-opacity-10 rounded cursor-pointer ${
+      draggable={!isSelected}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onClick={handleClick}
+      className={`inline-flex max-w-22 flex-col items-center gap-2 p-2 hover:bg-blue-300 hover:bg-opacity-10 rounded cursor-pointer transition-all ${
         isSelected ? 'border border-blue-400' : ''
-      }`}
+      } ${isDragging ? 'opacity-50' : ''} ${isDragOver ? 'bg-blue-500 bg-opacity-30 border-2 border-blue-400' : ''}`}
     >
       {name.endsWith('.txt') && (
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -62,8 +153,8 @@ export default function File({ name: initialName = "My File.txt" }: { name?: str
               d="M6 12C6 10.8954 6.89543 10 8 10H20L24 14H40C41.1046 14 42 14.8954 42 16V36C42 37.1046 41.1046 38 40 38H8C6.89543 38 6 37.1046 6 36V12Z" 
               fill="#FBBF24" 
               stroke="#D97706" 
-              stroke-width="2"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinejoin="round"
             />
 </svg>)
       }
