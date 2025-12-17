@@ -31,6 +31,15 @@ export default function PopupRightClick({
     onClose?.();
   };
 
+  const createFolder = () => {
+    addFile({
+      id: nanoid(),
+      name: "My Folder.dir",
+      type: "folder",
+      dateModified: Date.now(),
+    });
+  }
+
   return (
     <div
       style={{
@@ -53,7 +62,7 @@ export default function PopupRightClick({
       onClick={(e) => e.stopPropagation()}
     >
       <ul className="select-none">
-        <li className="px-4 py-2 hover:bg-zinc-800 cursor-pointer">
+        <li className="px-4 py-2 hover:bg-zinc-800 cursor-pointer" onClick={createFolder}>
           Create new folder
         </li>
 

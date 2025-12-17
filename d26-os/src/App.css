@@ -1,5 +1,34 @@
 @import "tailwindcss";
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
 
+.bios-screen {
+  font-family: monospace;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  text-align: left;
+  padding: 2rem;
+}
+
+.logo-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.boot-loading-text {
+  margin-top: 1rem;
+  opacity: 0.7;
+  font-size: 1rem;
+}
 #desktop {
   display: grid;
   grid-auto-flow: column;        /* KLJUČNO */

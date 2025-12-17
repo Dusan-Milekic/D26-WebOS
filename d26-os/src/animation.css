@@ -1,0 +1,56 @@
+/* Fullscreen boot container */
+.winboot-container {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Windows logo (4 squares) */
+.winboot-logo {
+  width: 160px;
+  height: 160px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.win-square {
+  background: #00adef; /* Windows blue */
+  width: 100%;
+  height: 100%;
+}
+
+.sq1 { transform: rotateY(8deg) rotateX(4deg); }
+.sq2 { transform: rotateY(8deg) rotateX(4deg); }
+.sq3 { transform: rotateY(8deg) rotateX(4deg); }
+.sq4 { transform: rotateY(8deg) rotateX(4deg); }
+
+/* Windows spinner */
+.winboot-spinner {
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: 0 30px;
+}
+
+.d1 { transform: rotate(0deg); }
+.d2 { transform: rotate(60deg); }
+.d3 { transform: rotate(120deg); }
+.d4 { transform: rotate(180deg); }
+.d5 { transform: rotate(240deg); }
+.d6 { transform: rotate(300deg); }
