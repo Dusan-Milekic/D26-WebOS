@@ -17,6 +17,7 @@ function App() {
   const [startOpen, setStartOpen] = useState(false);
   const [openFolders, setOpenFolders] = useState<Array<{ id: string; name: string }>>([]);
   const [openFiles, setOpenFiles] = useState<Array<{ id: string; name: string }>>([]);
+  const [activeWindow, setActiveWindow] = useState<string | null>(null);
 
   const files = useFiles((s) => s.files);
   const currentTheme = useTheme((s) => s.currentTheme);
@@ -33,21 +34,33 @@ function App() {
   const handleFolderOpen = (folderId: string, folderName: string) => {
     if (!openFolders.find(f => f.id === folderId)) {
       setOpenFolders([...openFolders, { id: folderId, name: folderName }]);
+      setActiveWindow(`folder-${folderId}`);
+    } else {
+      setActiveWindow(`folder-${folderId}`);
     }
   };
 
   const handleFolderClose = (folderId: string) => {
     setOpenFolders(openFolders.filter(f => f.id !== folderId));
+    if (activeWindow === `folder-${folderId}`) {
+      setActiveWindow(null);
+    }
   };
 
   const handleFileOpen = (fileId: string, fileName: string) => {
     if (!openFiles.find(f => f.id === fileId)) {
       setOpenFiles([...openFiles, { id: fileId, name: fileName }]);
+      setActiveWindow(`file-${fileId}`);
+    } else {
+      setActiveWindow(`file-${fileId}`);
     }
   };
 
   const handleFileClose = (fileId: string) => {
     setOpenFiles(openFiles.filter(f => f.id !== fileId));
+    if (activeWindow === `file-${fileId}`) {
+      setActiveWindow(null);
+    }
   };
 
   // Get background class based on theme
@@ -80,6 +93,7 @@ function App() {
         <div
           id="desktop"
           onContextMenu={openPopup}
+          onClick={() => setStartOpen(false)}
           className={`w-screen h-screen relative transition-all duration-500 ${getBackgroundClass()}`}
           style={
             currentTheme.background === 'image' && currentTheme.backgroundImage
@@ -99,27 +113,47 @@ function App() {
 
           {/* Render open folder windows */}
           {openFolders.map((folder) => (
-            <FolderWindow
+            <div
               key={folder.id}
-              folderId={folder.id}
-              folderName={folder.name}
-              onClose={() => handleFolderClose(folder.id)}
-            />
+              style={{ zIndex: activeWindow === `folder-${folder.id}` ? 2000 : 1000 }}
+              onClick={() => setActiveWindow(`folder-${folder.id}`)}
+            >
+              <FolderWindow
+                folderId={folder.id}
+                folderName={folder.name}
+                onClose={() => handleFolderClose(folder.id)}
+                onFileOpen={handleFileOpen}
+              />
+            </div>
           ))}
 
           {/* Render open text editor windows */}
           {openFiles.map((file) => (
-            <TextEditor
+            <div
               key={file.id}
-              fileId={file.id}
-              fileName={file.name}
-              onClose={() => handleFileClose(file.id)}
-            />
+              style={{ zIndex: activeWindow === `file-${file.id}` ? 2000 : 1000 }}
+              onClick={() => setActiveWindow(`file-${file.id}`)}
+            >
+              <TextEditor
+                fileId={file.id}
+                fileName={file.name}
+                onClose={() => handleFileClose(file.id)}
+              />
+            </div>
           ))}
 
           {startOpen && <StartMenu />}
 
-          <Taskbar onStartClick={() => setStartOpen((prev) => !prev)} />
+          <Taskbar 
+            onStartClick={(e) => {
+              e.stopPropagation();
+              setStartOpen((prev) => !prev);
+            }} 
+            openWindows={[...openFolders.map(f => ({ id: f.id, name: f.name, type: 'folder' as const })), 
+                          ...openFiles.map(f => ({ id: f.id, name: f.name, type: 'file' as const }))]}
+            activeWindow={activeWindow}
+            onWindowClick={(id, type) => setActiveWindow(`${type}-${id}`)}
+          />
         </div>
       )}
 

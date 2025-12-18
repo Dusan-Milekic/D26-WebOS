@@ -1,9 +1,10 @@
-// PopupRightClick.tsx
 import { useEffect, useState } from "react";
 import ShowSystem from "./ShowSystem";
+import Settings from "./Settings";
 import useFiles from "./store/files";
 import { nanoid } from "nanoid";
 import Personalize from "./Personalize";
+
 type MousePosition = {
   x: number;
   y: number;
@@ -18,6 +19,7 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
   if (!mousePosition) return null;
 
   const [showSystem, setShowSystem] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [menuPos, setMenuPos] = useState<MousePosition>(mousePosition);
 
   const addFile = useFiles((s) => s.addFile);
@@ -25,7 +27,7 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
 
   useEffect(() => {
     const menuWidth = 220;
-    const menuHeight = 160; // rough height
+    const menuHeight = 220;
 
     const { innerWidth, innerHeight } = window;
 
@@ -44,6 +46,7 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
       name: "New File.txt",
       type: "txt",
       dateModified: Date.now(),
+      content: "",
     });
 
     onClose?.();
@@ -65,6 +68,16 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
     onClose?.();
   };
 
+  const openSettings = () => {
+    setShowSettings(true);
+    onClose?.();
+  };
+
+  const refreshDesktop = () => {
+    window.location.reload();
+    onClose?.();
+  };
+
   return (
     <>
       <div
@@ -75,11 +88,12 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
         className="
           fixed
           z-50
-          min-w-[200px]
+          min-w-[220px]
           rounded-md
           border
           border-zinc-700
-          bg-zinc-900
+          bg-zinc-900/95
+          backdrop-blur-sm
           py-1
           shadow-2xl
           text-sm
@@ -89,35 +103,57 @@ export default function PopupRightClick({ mousePosition, onClose }: Props) {
       >
         <ul className="select-none">
           <li
-            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer"
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
             onClick={createFolder}
           >
-            Create new folder
+            📁 Create new folder
           </li>
 
           <li
-            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer"
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
             onClick={createTxt}
           >
-            Create .txt file
+            📄 Create .txt file
           </li>
 
           <li className="my-1 h-px bg-zinc-700" />
 
           <li
-            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer"
-            onClick={openSystemPanel}
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
+            onClick={refreshDesktop}
           >
-            Show System
+            🔄 Refresh
           </li>
 
-          <li className="px-4 py-2 hover:bg-zinc-800 cursor-pointer" onClick={setShowPersonalize.bind(null, true)}>
-            Personalize
+          <li className="my-1 h-px bg-zinc-700" />
+
+          <li
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
+            onClick={setShowPersonalize.bind(null, true)}
+          >
+            🎨 Personalize
+          </li>
+
+          <li
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
+            onClick={openSettings}
+          >
+            ⚙️ Settings
+          </li>
+
+          <li className="my-1 h-px bg-zinc-700" />
+
+          <li
+            className="px-4 py-2 hover:bg-zinc-800 cursor-pointer flex items-center gap-2"
+            onClick={openSystemPanel}
+          >
+            💻 Show System
           </li>
         </ul>
       </div>
 
       {showSystem && <ShowSystem />}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
       {showPersonalize && <Personalize onClose={() => setShowPersonalize(false)} />}
     </>
   );
