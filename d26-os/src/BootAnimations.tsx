@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useSpring, animated, useTransition } from "@react-spring/web";
+
+import { useSpring, animated } from "@react-spring/web";
 import "./animation.css";
 
 export default function BootAnimation() {
