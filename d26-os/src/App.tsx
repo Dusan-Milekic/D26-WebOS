@@ -6,8 +6,8 @@ import useFiles from "./store/files";
 import BootManager from "./BootManager";
 import Taskbar from "./Taskbar";
 import StartMenu from "./StartMenu";
-import FolderWindow from "./Folderwindow";
-import TextEditor from "./Texteditor";
+import FolderWindow from "./FolderWindow";
+import TextEditor from "./TextEditor";
 import useTheme from "./store/theme";
 
 function App() {

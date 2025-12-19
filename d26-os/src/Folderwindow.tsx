@@ -13,13 +13,12 @@ function FolderWindow({ folderId, folderName, onClose, onFileOpen }: FolderWindo
   const files = useFiles((s) => s.files);
   const addFile = useFiles((s) => s.addFile);
   const removeFile = useFiles((s) => s.removeFile);
-  const updateFile = useFiles((s) => s.updateFile);
   const moveFile = useFiles((s) => s.moveFile);
   
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 100, y: 100 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 700, height: 500 });
+  const [size] = useState({ width: 700, height: 500 });
   const [isMaximized, setIsMaximized] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number, fileId?: string } | null>(null);

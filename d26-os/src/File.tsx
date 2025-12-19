@@ -17,7 +17,7 @@ export default function File({ id, name: initialName = "My File.txt", onFolderOp
   const [isRenaming, setIsRenaming] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const fileRef = useRef<HTMLDivElement>(null);
-  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLSpanElement>(null);
   
   const files = useFiles((s) => s.files);
